@@ -118,11 +118,25 @@ document.addEventListener('DOMContentLoaded', function() {
         searchResults.id = 'search-results';
         searchForm.appendChild(searchResults);
         
-        // Get all articles/posts on the page
+        // Get all articles - use static index if available, otherwise parse current page
         function getAllArticles() {
-            const articles = [];
+            // First, try to use the static search index (works with file:// protocol)
+            if (typeof window.SEARCH_INDEX !== 'undefined' && window.SEARCH_INDEX.length > 0) {
+                const isInPostsDir = window.location.pathname.includes('/posts/');
+                const basePath = isInPostsDir ? '../' : './';
+                
+                // Fix relative paths for posts directory
+                return window.SEARCH_INDEX.map(article => {
+                    let link = article.link;
+                    if (link && !link.startsWith('http') && isInPostsDir && !link.startsWith('../')) {
+                        link = basePath + link.replace('./', '');
+                    }
+                    return { ...article, link: link };
+                });
+            }
             
-            // Determine if we're in a posts subdirectory (for relative path fixing)
+            // Fallback: parse articles from current page
+            const articles = [];
             const isInPostsDir = window.location.pathname.includes('/posts/');
             const basePath = isInPostsDir ? '../' : './';
             
@@ -202,146 +216,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // If no articles found on current page, try to load from index page
-            // This helps on pages like about-2.html or individual post pages
-            if (articles.length === 0 && typeof window.searchIndex === 'undefined') {
-                loadSearchIndex();
-                return [];
-            }
-            
             return articles;
         }
         
-        // Load search index from homepage if available
-        async function loadSearchIndex() {
-            if (typeof window.searchIndex !== 'undefined') {
-                return window.searchIndex;
-            }
-            
-            try {
-                // Determine correct path to index
-                const isInPostsDir = window.location.pathname.includes('/posts/');
-                const indexPath = isInPostsDir ? '../index.html' : './index.html';
-                
-                const response = await fetch(indexPath);
-                const html = await response.text();
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                
-                const articles = [];
-                const basePath = isInPostsDir ? '../' : './';
-                
-                // Get favorite cards from index
-                const favoriteCards = doc.querySelectorAll('.favorite-card');
-                favoriteCards.forEach(card => {
-                    const titleEl = card.querySelector('.favorite-title a');
-                    const excerptEl = card.querySelector('.favorite-excerpt');
-                    let link = titleEl?.href;
-                    const title = titleEl?.textContent?.trim() || '';
-                    const excerpt = excerptEl?.textContent?.trim() || '';
-                    
-                    if (link && !link.startsWith('http') && isInPostsDir && !link.startsWith('../')) {
-                        link = basePath + link.replace('./', '');
-                    }
-                    
-                    if (link && title) {
-                        articles.push({
-                            title: title,
-                            excerpt: excerpt,
-                            link: link,
-                            date: null
-                        });
-                    }
-                });
-                
-                // Get post items from index
-                const postItems = doc.querySelectorAll('.post-item');
-                postItems.forEach(item => {
-                    const titleEl = item.querySelector('.post-title a');
-                    const dateEl = item.querySelector('.post-date');
-                    let link = titleEl?.href;
-                    const title = titleEl?.textContent?.trim() || '';
-                    const date = dateEl?.textContent?.trim() || null;
-                    
-                    if (link && !link.startsWith('http') && isInPostsDir && !link.startsWith('../')) {
-                        link = basePath + link.replace('./', '');
-                    }
-                    
-                    if (link && title) {
-                        articles.push({
-                            title: title,
-                            excerpt: '',
-                            link: link,
-                            date: date,
-                            datetime: null
-                        });
-                    }
-                });
-                
-                window.searchIndex = articles;
-                return articles;
-            } catch (error) {
-                console.error('Failed to load search index:', error);
-                window.searchIndex = [];
-                return [];
-            }
-        }
-        
         // Search function
-        async function performSearch(query) {
+        function performSearch(query) {
             if (!query || query.length < 2) {
                 searchResults.classList.remove('active');
                 return;
             }
             
-            let articles = getAllArticles();
-            
-            // If no articles on current page, try to load from index
-            if (articles.length === 0) {
-                articles = await loadSearchIndex();
-            }
-            
-            // Also try loading from interest-areas page if available
-            if (articles.length === 0 || articles.length < 10) {
-                try {
-                    const isInPostsDir = window.location.pathname.includes('/posts/');
-                    const interestAreasPath = isInPostsDir ? '../interest-areas.html' : './interest-areas.html';
-                    const response = await fetch(interestAreasPath);
-                    const html = await response.text();
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    
-                    const basePath = isInPostsDir ? '../' : './';
-                    
-                    // Get posts-list-mini items
-                    const miniPosts = doc.querySelectorAll('.posts-list-mini li');
-                    miniPosts.forEach(item => {
-                        const linkEl = item.querySelector('a');
-                        const dateEl = item.querySelector('time');
-                        let link = linkEl?.href;
-                        const title = linkEl?.textContent?.trim() || '';
-                        const date = dateEl?.textContent?.trim() || null;
-                        
-                        if (link && !link.startsWith('http') && isInPostsDir && !link.startsWith('../')) {
-                            link = basePath + link.replace('./', '');
-                        }
-                        
-                        // Avoid duplicates
-                        if (link && title && !articles.find(a => a.link === link)) {
-                            articles.push({
-                                title: title,
-                                excerpt: '',
-                                link: link,
-                                date: date,
-                                datetime: null
-                            });
-                        }
-                    });
-                } catch (error) {
-                    // Silent fail - just continue with what we have
-                }
-            }
-            
+            const articles = getAllArticles();
             const queryLower = query.toLowerCase();
             
             // Filter articles by title and excerpt
@@ -414,8 +299,8 @@ document.addEventListener('DOMContentLoaded', function() {
             }
             
             // Debounce search
-            searchTimeout = setTimeout(async () => {
-                await performSearch(query);
+            searchTimeout = setTimeout(() => {
+                performSearch(query);
             }, 150);
         });
         

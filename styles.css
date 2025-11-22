@@ -47,7 +47,7 @@
 
 html {
     font-size: 16px;
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
 }
 
 body {
@@ -122,7 +122,6 @@ p {
 a {
     color: var(--color-secondary);
     text-decoration: none;
-    transition: color var(--transition-fast);
 }
 
 a:hover {
@@ -189,7 +188,6 @@ a:hover {
     width: 24px;
     height: 2px;
     background: var(--color-primary);
-    transition: all var(--transition-base);
 }
 
 .nav-menu {
@@ -244,15 +242,12 @@ a:hover {
     margin-top: var(--spacing-xs);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
-    transition: all var(--transition-base);
 }
 
 .has-submenu:hover .submenu,
 .has-submenu:focus-within .submenu {
     opacity: 1;
     visibility: visible;
-    transform: translateY(0);
 }
 
 .submenu li {
@@ -309,7 +304,6 @@ a:hover {
     border: 1px solid var(--color-border);
     border-radius: 24px;
     padding: var(--spacing-xs) var(--spacing-sm);
-    transition: all var(--transition-fast);
 }
 
 .search-form:focus-within {
@@ -323,7 +317,6 @@ a:hover {
     outline: none;
     font-size: 0.875rem;
     width: 150px;
-    transition: width var(--transition-base);
 }
 
 .search-form input:focus {
@@ -394,13 +387,11 @@ a:hover {
     border: 1px solid var(--color-border);
     border-radius: 12px;
     padding: var(--spacing-lg);
-    transition: all var(--transition-base);
     display: flex;
     flex-direction: column;
 }
 
 .favorite-card:hover {
-    transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
     border-color: var(--color-secondary);
 }
@@ -413,7 +404,6 @@ a:hover {
 .favorite-title a {
     color: var(--color-primary);
     text-decoration: none;
-    transition: color var(--transition-fast);
 }
 
 .favorite-title a:hover {
@@ -445,7 +435,6 @@ a:hover {
 .post-item {
     padding: var(--spacing-lg) 0;
     border-bottom: 1px solid var(--color-border);
-    transition: all var(--transition-fast);
 }
 
 .post-item:first-child {
@@ -456,9 +445,7 @@ a:hover {
     border-bottom: none;
 }
 
-.post-item:hover {
-    padding-left: var(--spacing-sm);
-}
+/* No hover animations */
 
 .post-header {
     display: flex;
@@ -476,7 +463,6 @@ a:hover {
 .post-title a {
     color: var(--color-text);
     text-decoration: none;
-    transition: color var(--transition-fast);
 }
 
 .post-title a:hover {
@@ -552,14 +538,13 @@ a:hover {
         margin-top: var(--spacing-sm);
         opacity: 0;
         visibility: hidden;
-        transform: translateY(-10px);
-        transition: all var(--transition-base);
+        display: none;
     }
     
     .nav-menu.active {
         opacity: 1;
         visibility: visible;
-        transform: translateY(0);
+        display: flex;
     }
     
     .nav-menu > li {
@@ -580,7 +565,6 @@ a:hover {
         position: static;
         opacity: 1;
         visibility: visible;
-        transform: none;
         box-shadow: none;
         border: none;
         border-top: 1px solid var(--color-border);
@@ -667,23 +651,18 @@ a:hover {
     color: white;
 }
 
-/* Smooth scrolling for all browsers */
-@media (prefers-reduced-motion: no-preference) {
-    html {
-        scroll-behavior: smooth;
-    }
+/* Smooth scrolling disabled */
+html {
+    scroll-behavior: auto;
 }
 
-/* Respect reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-        scroll-behavior: auto !important;
-    }
+/* All animations disabled */
+*,
+*::before,
+*::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
 }
 
 /* Loading state for cards - removed animations */
@@ -722,7 +701,6 @@ a:hover {
     background: var(--color-bg);
     border: 1px solid var(--color-border);
     border-radius: 12px;
-    transition: all var(--transition-base);
 }
 
 .interest-group:hover {
@@ -756,16 +734,13 @@ a:hover {
     justify-content: space-between;
     align-items: flex-start;
     gap: var(--spacing-md);
-    transition: padding-left var(--transition-fast);
 }
 
 .posts-list-mini li:last-child {
     border-bottom: none;
 }
 
-.posts-list-mini li:hover {
-    padding-left: var(--spacing-sm);
-}
+/* No hover animations */
 
 .posts-list-mini a {
     color: var(--color-text);

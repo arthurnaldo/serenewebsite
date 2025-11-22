@@ -18,17 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Toggle nav menu
             navMenu.classList.toggle('active');
             
-            // Animate hamburger icon
-            const spans = this.querySelectorAll('span');
-            if (!isExpanded) {
-                spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
-                spans[1].style.opacity = '0';
-                spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
-            } else {
-                spans[0].style.transform = '';
-                spans[1].style.opacity = '1';
-                spans[2].style.transform = '';
-            }
+            // No animation - static display
         });
     }
     
@@ -67,10 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
             navMenu.classList.remove('active');
             if (mobileMenuToggle) {
                 mobileMenuToggle.setAttribute('aria-expanded', 'false');
-                const spans = mobileMenuToggle.querySelectorAll('span');
-                spans[0].style.transform = '';
-                spans[1].style.opacity = '1';
-                spans[2].style.transform = '';
+                // No animation reset needed
             }
         }
     });
@@ -103,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 window.scrollTo({
                     top: targetPosition,
-                    behavior: 'smooth'
+                    behavior: 'auto'
                 });
                 
                 // Close mobile menu if open

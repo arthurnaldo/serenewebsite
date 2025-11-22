@@ -8,7 +8,7 @@ A modern, polished rebuild of the "Serene Is Learning" blog website featuring cl
 - 📱 **Fully Responsive**: Optimized for all devices from mobile to desktop
 - ♿ **Accessible**: WCAG-compliant with proper semantic HTML and keyboard navigation
 - 🚀 **Performance**: Lightweight, fast-loading with optimized CSS and JavaScript
-- 🎨 **Polished UI**: Smooth transitions, hover effects, and visual feedback
+- 🎨 **Polished UI**:  Smooth transitions, hover effects, and visual feedback
 
 ## File Structure
 
